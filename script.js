@@ -116,9 +116,30 @@
     gsap.set("#btn-begin", { opacity: 0 });
   }
 
+  function setStatus(msg) {
+    var el = document.getElementById("adate-status");
+    if (el) el.textContent = msg;
+  }
+
+  function forceGoToStory() {
+    setStatus("force→story");
+    try {
+      if (window.ADate && window.ADate.opening && window.ADate.opening.goToStory) {
+        window.ADate.opening.goToStory();
+      } else {
+        var opening = document.getElementById("scene-opening");
+        var story = document.getElementById("scene-story");
+        if (opening) { opening.classList.remove("active"); gsap.set(opening, { clearProps: "all" }); }
+        if (story) { story.classList.add("active"); gsap.set(story, { opacity: 1, visibility: "visible" }); }
+        window.scrollTo(0, 0);
+      }
+    } catch (e) { console.error("[ADate] forceGoToStory failed:", e); }
+  }
+
   function boot() {
     if (booted) return;
     booted = true;
+    setStatus("booting…");
 
     initLenis();
 
@@ -130,34 +151,52 @@
 
     if (window.ADate && window.ADate.timeline) {
       setTimeout(function () {
-        try { window.ADate.timeline.init(); } catch (e) { }
+        try { window.ADate.timeline.init(); } catch (e) { console.error("[ADate] timeline.init failed:", e); }
       }, 120);
     }
 
     if (window.ADate && window.ADate.memories) {
-      try { window.ADate.memories.init(); } catch (e) { }
-      try { window.ADate.memories.wire(); } catch (e) { }
+      try { window.ADate.memories.init(); } catch (e) { console.error("[ADate] memories.init failed:", e); }
+      try { window.ADate.memories.wire(); } catch (e) { console.error("[ADate] memories.wire failed:", e); }
     }
 
-    try { wireButtons(); } catch (e) { }
+    try { wireButtons(); } catch (e) { console.error("[ADate] wireButtons failed:", e); }
 
     if (window.ADate && window.ADate.particles) {
-      try { window.ADate.particles.start(); } catch (e) { }
+      try { window.ADate.particles.start(); } catch (e) { console.error("[ADate] particles.start failed:", e); }
     }
 
     if (window.ADate && window.ADate.opening) {
+      setStatus("opening…");
       setTimeout(function () {
         try { window.ADate.opening.start(); } catch (e) {
+          console.error("[ADate] opening.start failed:", e);
+          setStatus("opening FAILED — fallback");
           var loading = document.getElementById("loading");
           if (loading) loading.classList.add("hidden");
+          setTimeout(forceGoToStory, 300);
         }
       }, 550);
+    } else {
+      console.error("[ADate] window.ADate.opening is undefined — script may have failed to load");
+      setStatus("opening MISSING — fallback");
+      var loading = document.getElementById("loading");
+      if (loading) loading.classList.add("hidden");
+      setTimeout(forceGoToStory, 300);
     }
 
     setTimeout(function () {
       var loading = document.getElementById("loading");
       if (loading) loading.classList.add("hidden");
     }, 4000);
+
+    setTimeout(function () {
+      var story = document.getElementById("scene-story");
+      if (story && !story.classList.contains("active")) {
+        console.error("[ADate] Safety fallback: story not active after 12s, forcing transition");
+        forceGoToStory();
+      }
+    }, 12000);
   }
 
   if (document.readyState === "loading") {

@@ -4,6 +4,11 @@
   var played = false;
   function RM() { return !!(window.ADate && window.ADate.prefersReducedMotion) && !!window.ADate.prefersReducedMotion(); }
 
+  function setStatus(msg) {
+    var el = document.getElementById("adate-status");
+    if (el) el.textContent = msg;
+  }
+
   function start() {
     if (played) return;
     played = true;
@@ -28,46 +33,56 @@
       return;
     }
 
-    var tl = gsap.timeline({
-      onComplete: function () {
-        setTimeout(goToStory, 650);
-      },
-    });
+    try {
+      var tl = gsap.timeline({
+        onComplete: function () {
+          setTimeout(goToStory, 650);
+        },
+      });
 
-    tl.fromTo(light, { scale: 0 }, {
-      scale: 1,
-      duration: 3.2,
-      ease: "power2.out",
-    }, 0);
+      tl.fromTo(light, { scale: 0 }, {
+        scale: 1,
+        duration: 3.2,
+        ease: "power2.out",
+      }, 0);
 
-    tl.fromTo(
-      line1,
-      { opacity: 0, filter: "blur(10px)", y: 12 },
-      { opacity: 1, filter: "blur(0px)", y: 0, duration: 1.1, ease: "power2.out" },
-      2.2
-    );
+      tl.fromTo(
+        line1,
+        { opacity: 0, filter: "blur(10px)", y: 12 },
+        { opacity: 1, filter: "blur(0px)", y: 0, duration: 1.1, ease: "power2.out" },
+        2.2
+      );
 
-    tl.to({}, { duration: 1.4 }, "+=1.3");
+      tl.to({}, { duration: 1.4 }, "+=1.3");
 
-    tl.fromTo(
-      line2,
-      { opacity: 0, filter: "blur(10px)", y: 12 },
-      { opacity: 1, filter: "blur(0px)", y: 0, duration: 1.1, ease: "power2.out" },
-      "+=0.3"
-    );
+      tl.fromTo(
+        line2,
+        { opacity: 0, filter: "blur(10px)", y: 12 },
+        { opacity: 1, filter: "blur(0px)", y: 0, duration: 1.1, ease: "power2.out" },
+        "+=0.3"
+      );
 
-    tl.to({}, { duration: 1.2 }, "+=1.2");
+      tl.to({}, { duration: 1.2 }, "+=1.2");
 
-    tl.to(scene, {
-      opacity: 0,
-      scale: 1.06,
-      filter: "blur(8px)",
-      duration: 0.9,
-      ease: "power2.inOut",
-    });
+      tl.to(scene, {
+        opacity: 0,
+        scale: 1.06,
+        filter: "blur(8px)",
+        duration: 0.9,
+        ease: "power2.inOut",
+      });
+    } catch (e) {
+      console.error("[ADate] Opening timeline failed:", e);
+      setStatus("timeline FAILED — fallback");
+      if (line1) gsap.set(line1, { opacity: 1, filter: "blur(0px)", y: 0 });
+      if (line2) gsap.set(line2, { opacity: 1, filter: "blur(0px)", y: 0 });
+      if (light) gsap.set(light, { scale: 1 });
+      setTimeout(goToStory, 2000);
+    }
   }
 
   function goToStory() {
+    setStatus("story…");
     if (window.ADate && window.ADate.timeline) {
       window.ADate.timeline.setMood("dawn");
     }
