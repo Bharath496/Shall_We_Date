@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Date With You</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body data-mood="night">
+
+    <canvas id="particles" aria-hidden="true"></canvas>
+    <div id="mood-veil" aria-hidden="true"></div>
+    <div id="flash" aria-hidden="true"></div>
+    <div id="curtain" aria-hidden="true">
+        <div class="curtain-core"></div>
+    </div>
+    <div id="scanlines" aria-hidden="true"></div>
+
+    <script id="shutter-audio" type="module">
+        window.AudioCtx = window.AudioCtx || null;
+        window.shutter = function () {
+            try {
+                if (!window.AudioCtx) window.AudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                var ctx = window.AudioCtx, t = ctx.currentTime;
+                var burst = ctx.createBufferSource();
+                var buf = ctx.createBuffer(1, ctx.sampleRate * 0.28, ctx.sampleRate);
+                var d = buf.getChannelData(0);
+                for (var i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length);
+                burst.buffer = buf;
+                var g = ctx.createGain(); g.gain.setValueAtTime(0.35, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.28);
+                burst.connect(g); g.connect(ctx.destination); burst.start(t);
+            } catch (e) { }
+        };
+    </script>
+
+    <div id="loading">
+        <div class="loading-dot"></div>
+    </div>
+
+    <!-- ══════════ 1 · OPENING ══════════ -->
+    <section id="scene-opening" class="scene active">
+        <div class="opening-field">
+            <div id="opening-light"></div>
+            <p id="opening-line1" class="opening-line">Some people enter your life quietly…</p>
+            <p id="opening-line2" class="opening-line">…and somehow become impossible to forget.</p>
+        </div>
+    </section>
+
+    <!-- ══════════ 2 · OUR STORY (scroll film) ══════════ -->
+    <section id="scene-story" class="scene">
+        <div id="story-spacer">
+            <div id="story-pin">
+                <header id="story-header">
+                    <span class="eyebrow" id="story-eyebrow">— chapter one —</span>
+                    <h1 id="story-title">Our Story</h1>
+                    <p id="story-sub">Scroll slowly. It breathes.</p>
+                </header>
+
+                <div class="mood-tag" id="mood-tag"></div>
+
+                <!-- timeline spine -->
+                <div id="timeline">
+                    <div id="timeline-line"></div>
+                    <span class="tl-dot" id="tl-dot-0"></span>
+                    <span class="tl-dot" id="tl-dot-1"></span>
+                    <span class="tl-dot" id="tl-dot-2"></span>
+                    <span class="tl-dot" id="tl-dot-3"></span>
+                </div>
+
+                <!-- chapters -->
+                <div class="chapter" data-chapter="0">
+                    <div class="chapter-visual"><div class="visual-art art-beginning"></div></div>
+                    <div class="chapter-text">
+                        <p class="chapter-kicker">chapter one</p>
+                        <h2>The beginning</h2>
+                        <p class="chapter-body">Before you, the world was flat. Then one ordinary day, you walked in — and everything gained depth.</p>
+                    </div>
+                </div>
+
+                <div class="chapter" data-chapter="1">
+                    <div class="chapter-visual"><div class="visual-art art-day"></div></div>
+                    <div class="chapter-text">
+                        <p class="chapter-kicker">chapter two</p>
+                        <h2>The first conversation</h2>
+                        <p class="chapter-body">I didn't plan to stay up late. Then the clock vanished, and your voice was the only time that mattered.</p>
+                    </div>
+                </div>
+
+                <div class="chapter" data-chapter="2">
+                    <div class="chapter-visual"><div class="visual-art art-rain"></div></div>
+                    <div class="chapter-text">
+                        <p class="chapter-kicker">chapter three</p>
+                        <h2>The moment I realized…</h2>
+                        <p class="chapter-body">It wasn't loud. It was a pause — a second where the rain outside and the silence between us both meant something.</p>
+                    </div>
+                </div>
+
+                <div class="chapter" data-chapter="3">
+                    <div class="chapter-visual"><div class="visual-art art-emotional"></div></div>
+                    <div class="chapter-text">
+                        <p class="chapter-kicker">chapter four</p>
+                        <h2>And I never stopped</h2>
+                        <p class="chapter-body">Every day since, you've been the reason ordinary mornings feel worth waking up for.</p>
+                    </div>
+                </div>
+
+                <div class="chapter-end" id="chapter-end">
+                    <button id="btn-proposal" class="btn-ghost">there's one more thing <span>→</span></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══════════ 3 · FLOATING MOMENTS (parallel) ══════════ -->
+        <div id="moment-field">
+            <p id="moments-quest">There are moments I wish I could experience again.</p>
+        </div>
+    </section>
+
+    <!-- moment modal -->
+    <div id="moment-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="m-modal-title" aria-hidden="true">
+        <div class="modal-veil"></div>
+        <div class="modal-card">
+            <p class="modal-kicker" id="m-modal-kicker"></p>
+            <h3 id="m-modal-title" tabindex="-1"></h3>
+            <p class="modal-body" id="m-modal-body"></p>
+            <div class="modal-actions">
+                <button id="m-replay" class="btn-soft">⟲ Replay this moment</button>
+                <button id="m-close" class="btn-ghost">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════ 5 · THE PROPOSAL ══════════ -->
+    <section id="scene-proposal" class="scene">
+        <div id="proposal-sky">
+            <div id="constellation"></div>
+            <div id="constellation-caption"></div>
+
+            <div class="prop-text-wrap">
+                <p id="prop-line-1" class="prop-line">“I've been trying to find the right way to say this.”</p>
+                <p id="prop-line-2" class="prop-line">“Maybe there isn't a perfect way.”</p>
+                <p id="prop-line-3" class="prop-line">“So I'll simply ask.”</p>
+            </div>
+
+            <div id="envelope-wrap">
+                <button id="btn-envelope" aria-label="Open the envelope">
+                    <span class="env" id="env">
+                        <span class="env-top"></span>
+                        <span class="env-body"></span>
+                        <span class="env-seal">❤</span>
+                        <span class="env-paper" id="env-paper">
+                            <span>Would you like to go on a date with me?</span>
+                        </span>
+                    </span>
+                </button>
+            </div>
+
+            <div id="proposal-choices" class="fade-group">
+                <button id="btn-yes-big" class="btn-primary">❤ YES</button>
+                <button id="btn-talk" class="btn-ghost">💬 LET'S TALK</button>
+            </div>
+
+            <div id="talk-panel" class="fade-group" aria-hidden="true">
+                <p class="talk-line">Okay. No pressure. This question stays open —<br>it will be waiting, exactly like this, whenever you're ready.</p>
+                <button id="btn-answer" class="btn-soft">The question is still mine? <span>→</span></button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════ 6 · AFTER YES ══════════ -->
+    <section id="scene-yes" class="scene">
+        <div id="white-flash-01">
+            <p id="count-01" class="count-serif">01</p>
+            <p id="yes-first-line" class="yes-sub">Then let's make our first memory.</p>
+            <button id="btn-to-dates" class="btn-soft fade-group">Let's choose the place <span>→</span></button>
+        </div>
+
+        <!-- ══════════ 7 · DATE GENERATOR ══════════ -->
+        <div id="scene-generator" class="fade-group" aria-hidden="true">
+            <div class="gen-head">
+                <p class="eyebrow">— something outside would be nice —</p>
+                <h2>The First-Date Generator</h2>
+                <p class="gen-sub">Swipe or scroll. Pick whichever one makes you smile.</p>
+            </div>
+            <div id="date-cards">
+                <div class="date-card" data-activity="Evening Walk">
+                    <span class="emoji">🌆</span>
+                    <h3>Evening Walk</h3>
+                    <p>Walk somewhere beautiful, and talk. The streetlights will do the rest.</p>
+                </div>
+                <div class="date-card" data-activity="Café + Conversation">
+                    <span class="emoji">☕</span>
+                    <h3>Café + Conversation</h3>
+                    <p>Pick a cozy café and spend ridiculous amounts of time talking.</p>
+                </div>
+                <div class="date-card" data-activity="Art Date" data-star="yes">
+                    <span class="emoji">🎨</span>
+                    <h3>Art Date</h3>
+                    <p>Visit a gallery — or make something together. Either way, color appears.</p>
+                </div>
+                <div class="date-card" data-activity="Bookstore Date">
+                    <span class="emoji">📚</span>
+                    <h3>Bookstore Date</h3>
+                    <p>Choose books for each other. Read a chapter loud enough to laugh.</p>
+                </div>
+                <div class="date-card" data-activity="Sunset Picnic">
+                    <span class="emoji">🌅</span>
+                    <h3>Sunset Picnic</h3>
+                    <p>Simple food, music, conversation — and a sky performing just for us.</p>
+                </div>
+                <div class="date-card" data-activity="Game Date">
+                    <span class="emoji">🎮</span>
+                    <h3>Game Date</h3>
+                    <p>Arcade, board game, or co-op. I promise to let you win. Eventually.</p>
+                </div>
+                <div class="date-card" data-activity="Movie + Food">
+                    <span class="emoji">🎬</span>
+                    <h3>Movie + Food</h3>
+                    <p>Movie first, then argue about which character was actually right.</p>
+                </div>
+                <div class="date-card" data-activity="Nature Date" data-star="yes">
+                    <span class="emoji">🌳</span>
+                    <h3>Nature Date</h3>
+                    <p>Park, botanical garden, or an easy outdoor walk — fresh air, easier words.</p>
+                </div>
+            </div>
+            <button id="btn-pick" class="btn-soft">🎲 Choose Our First Date</button>
+        </div>
+
+        <!-- ══════════ 8 · CHOOSE (3 cards → particles → OUR FIRST DATE) ══════════ -->
+        <div id="scene-choose" class="scene-in" aria-hidden="true">
+            <p class="eyebrow">— one of these, please —</p>
+            <h2 class="choose-title">Choose Our First Date</h2>
+            <div id="choose-cards"></div>
+            <p id="choose-hint">Tap one. I'll handle the rest.</p>
+        </div>
+
+        <!-- ══════════ 9 · FINAL ══════════ -->
+        <div id="scene-final" class="scene-in" aria-hidden="true">
+            <div id="final-sky">
+                <div id="final-constellation"></div>
+                <p id="final-line-1">One question brought us here.</p>
+                <p id="final-line-2">Maybe this can be the beginning of something beautiful.</p>
+                <button id="btn-begin" class="btn-primary">BEGIN <span>→</span></button>
+
+                <div id="date-plan" class="fade-group" aria-hidden="true">
+                    <p class="eyebrow">— our first date —</p>
+                    <h2 id="plan-title">Evening Walk</h2>
+                    <p id="plan-body">Wherever it is, it'll be comfortable, public, and ours.<br />I'll pick the time. You just bring the smile.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="vendor/gsap.min.js"></script>
+    <script src="vendor/ScrollTrigger.min.js"></script>
+    <script src="vendor/lenis.min.js"></script>
+    <script src="animations/particles.js"></script>
+    <script src="animations/transitions.js"></script>
+    <script src="animations/timeline.js"></script>
+    <script src="scenes/opening.js"></script>
+    <script src="scenes/memories.js"></script>
+    <script src="scenes/proposal.js"></script>
+    <script src="scenes/date.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
