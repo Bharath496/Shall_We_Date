@@ -3,8 +3,8 @@
 
   function RM() { return !!(window.ADate && window.ADate.prefersReducedMotion) && !!window.ADate.prefersReducedMotion(); }
 
-  var MOODS = ["dawn", "day", "rain", "night"];
-  var MOOD_LABELS = { dawn: "a warm morning", day: "bright daylight", rain: "a quiet storm", night: "the night before I ask" };
+  var MOODS = ["dawn", "day", "rain", "night", "sunrise"];
+  var MOOD_LABELS = { dawn: "a warm morning", day: "bright daylight", rain: "a quiet storm", night: "the night before I ask", sunrise: "a new beginning" };
   var current = "night";
 
   function setMood(mood) {

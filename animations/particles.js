@@ -1,7 +1,6 @@
 (function () {
   "use strict";
 
-  var FPS = 60;
   var canvas = document.getElementById("particles");
   if (!canvas) return;
   var ctx = canvas.getContext("2d");

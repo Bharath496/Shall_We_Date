@@ -208,10 +208,6 @@
       gsap.to(fconst, { opacity: 1, duration: 1.6, delay: 0.2 });
     }
 
-    if (plan) {
-      plan.setAttribute("aria-hidden", "false");
-      gsap.fromTo(plan, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.9, delay: 2.9, ease: "power2.out" });
-    }
     window.scrollTo(0, 0);
   }
 

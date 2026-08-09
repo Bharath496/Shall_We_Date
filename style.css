@@ -583,4 +583,13 @@ body[data-mood="sunrise"] #mood-veil { background: radial-gradient(ellipse at 50
     .chapter-visual { display: flex; justify-content: center; }
     .visual-art { width: min(34vh, 70vw); height: min(34vh, 70vw); }
     .floating { width: 52px; height: 52px; font-size: 1.3rem; }
+    .chapter[data-chapter="0"] { top: 12vh; }
+    .chapter[data-chapter="1"] { top: 28vh; }
+    .chapter[data-chapter="2"] { top: 44vh; }
+    .chapter[data-chapter="3"] { top: 60vh; }
+    #scene-proposal { overflow-y: auto; overflow-x: hidden; }
+    #proposal-sky { height: auto; min-height: 100vh; padding: 8vh 0; justify-content: flex-start; }
+    .prop-text-wrap { padding: 0 4vw; }
+    #envelope-wrap { margin-top: clamp(1.5rem, 4vh, 3rem); }
+    #proposal-choices { flex-direction: column; align-items: center; }
 }

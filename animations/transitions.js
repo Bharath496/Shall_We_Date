@@ -1,7 +1,6 @@
 (function () {
   "use strict";
 
-  var FPS_BASE = 60;
   var fadeGroup = function (el, show, dur) {
     if (!el) return;
     el.setAttribute("aria-hidden", show ? "false" : "true");

@@ -56,6 +56,21 @@
 
   function onKey(e) {
     if (e.key === "Escape") closeMoment();
+    if (e.key === "Tab") trapFocus(e);
+  }
+
+  function trapFocus(e) {
+    var modal = document.getElementById("moment-modal");
+    if (!modal || !modal.classList.contains("open")) return;
+    var focusable = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    if (!focusable.length) return;
+    var first = focusable[0];
+    var last = focusable[focusable.length - 1];
+    if (e.shiftKey) {
+      if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+    } else {
+      if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
   }
 
   function build() {
@@ -153,9 +168,13 @@
 
   function replay() {
     if (currentIndex < 0) return;
+    var m = MOMENTS[currentIndex];
     var modal = document.getElementById("moment-modal");
     var card = modal ? modal.querySelector(".modal-card") : null;
     if (card) {
+      document.getElementById("m-modal-kicker").textContent = m.kicker;
+      document.getElementById("m-modal-title").textContent = m.title;
+      document.getElementById("m-modal-body").textContent = m.body;
       gsap.fromTo(
         card,
         { scale: 0.94, opacity: 0.4, filter: "blur(6px)" },

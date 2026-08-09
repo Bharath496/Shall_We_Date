@@ -206,7 +206,6 @@
   function onYes() {
     if (STATE.answered) return;
     STATE.answered = true;
-    if (window.shutter) window.shutter();
     if (window.ADate && window.ADate.date) {
       window.ADate.date.startYesFlow();
     }
